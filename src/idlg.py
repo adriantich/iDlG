@@ -1,5 +1,5 @@
 import argparse
-
+from explorer.explore_parser import ExplorerSubParser
 
 
 def main():
@@ -12,8 +12,7 @@ def main():
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
     
     # Initialize subparsers
-    # ENASubParser(subparsers)
-    # DBSubParser(subparsers)
+    ExplorerSubParser(subparsers)
     
     # Parse arguments
     args = parser.parse_args()
