@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from explorer.interactive_plot import InteractivePlot
 from loader import VCFLoader
-from scanners.scan_by_pos import DEFAULT_OUTPUT_DIR, DEFAULT_STEP, DEFAULT_WINDOW_SIZE
+from scanners.defaults import DEFAULT_OUTPUT_DIR, DEFAULT_STEP, DEFAULT_WINDOW_SIZE
 from abc import ABC, abstractmethod
 
 
@@ -20,7 +20,8 @@ class Explorer(ABC):
                  output_dir=None,
                  chrom=None,
                  window_sizes=None,
-                 steps=None):
+                 steps=None,
+                 force_windowstep=False):
         self.plot = plot
         self.input_file = input_file
         self.from_parquet = from_parquet
@@ -28,11 +29,14 @@ class Explorer(ABC):
         self.chrom = chrom
         self.window_sizes = window_sizes
         self.steps = steps
+        self.force_windowstep = force_windowstep
         self.scanner = None
         self.main()
 
     Scanner = None
     ScannerFromParquet = None
+    test_window_sizes = DEFAULT_WINDOW_SIZE
+    test_steps = DEFAULT_STEP
     
     def load_data(self):
         loader = VCFLoader(self.input_file)
@@ -41,7 +45,8 @@ class Explorer(ABC):
             vcf_object = loader,
             chrom=self.chrom,
             window_size=self.window_sizes,
-            step=self.steps
+            step=self.steps,
+            force_windowstep=self.force_windowstep
         )
         self.scanner.run_scan()
         print('Saving results to parquet...')
@@ -70,7 +75,7 @@ class Explorer(ABC):
 
         loader = VCFLoader(test_file)
 
-        scaner = cls.Scanner(vcf_object = loader, chrom= ["OV121081.1"])
+        scaner = cls.Scanner(vcf_object = loader, chrom= ["OV121081.1"], window_size=cls.test_window_sizes, step=cls.test_steps)
         # scaner = cls.Scanner(vcf_object = loader, chrom= ["OV121097.1", "OV121081.1"])
         scaner.run_scan()
         scaner.save_to_parquet("test_scan_results")
@@ -135,6 +140,13 @@ class ExplorerParser(ABC):
             nargs='+',
             type=int,
             help=f'List of step sizes to explore (default: {DEFAULT_STEP})'
+        )
+        parser.add_argument(
+            '-f', '--force_windowstep',
+            action='store_true',
+            default=False,
+            help='Force the calculation of all the combinations of window sizes and steps.' \
+                ' If not set, window sizes is not combined with smaller step sizes (e.g. window size 1000 is not combined with step size 100).'
         )
         return parser
     

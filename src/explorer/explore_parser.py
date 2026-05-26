@@ -9,7 +9,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from explorer.explorer import Explorer
 from explorer.explorer import ExplorerParser
 from scanners.scan_by_pos import ScannerByPos, ScannerByPosFromParquet
+from scanners.scan_by_snps import ScannerBySNP, ScannerBySNPFromParquet
 
+from scanners.defaults import DEFAULT_WINDOW_SIZE_SNPS, DEFAULT_STEP_SNPS
 
 
 class ExplorerByPos(Explorer):
@@ -17,13 +19,10 @@ class ExplorerByPos(Explorer):
     ScannerFromParquet = ScannerByPosFromParquet
 
 class ExplorerBySNP(Explorer):
-    def Scanner(self, *args, **kwargs):
-        # return ScannerBySNP(*args, **kwargs)
-        pass
-    
-    def ScannerFromParquet(self, *args, **kwargs):
-        # return ScannerBySNPFromParquet(*args, **kwargs)
-        pass
+    Scanner = ScannerBySNP
+    ScannerFromParquet = ScannerBySNPFromParquet
+    test_window_sizes = DEFAULT_WINDOW_SIZE_SNPS
+    test_steps = DEFAULT_STEP_SNPS
 
 class ExplorerByPosParser(ExplorerParser):
     def explorer(self,*args,**kwargs):

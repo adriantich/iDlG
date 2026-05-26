@@ -2,18 +2,17 @@
 from zipfile import Path
 import sys
 import os
+# debug only
+# sys.path.insert(0, os.path.dirname('src/.'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from explorer.loader import VCFLoader
 from tqdm import tqdm
 import os
-import pandas as pd
-import json
 from scanners.scanner_template import ScannerTemplate, ScannerFromParquetTemplate
 
 
 
-class ScannerByPos(ScannerTemplate):
+class ScannerBySNP(ScannerTemplate):
     def scan(self, chrom: list = None, window: list = None, step: list = None):
         if self.records is None:
             print("No records to scan.")
@@ -32,9 +31,14 @@ class ScannerByPos(ScannerTemplate):
         result_index = []
         for chr in chrom:
             chr_records = self.records[self.records['CHROM'] == chr]
-            min_pos = chr_records['POS'].min()
-            max_pos = chr_records['POS'].max()
-            print(f"Scanning chromosome {chr} from position {min_pos} to {max_pos}")
+            min_pos = 0
+            max_pos = chr_records['POS'].size
+
+        ######
+        ## ToDo: implement the scan by snp logic here
+        ######
+
+            print(f"Scanning chromosome {chr} with {max_pos} SNPs.")
 
             for w in window:
                 for s in step:
@@ -49,7 +53,7 @@ class ScannerByPos(ScannerTemplate):
                     for start in tqdm(range(min_pos, max_pos, s)):
                         end = start + w
                         # break
-                        window_records = chr_records[(chr_records['POS'] >= start) & (chr_records['POS'] < end)]
+                        window_records = chr_records[start:end]
                         if not window_records.empty:
                             # do the col means for the samples
                             case_records_mean = window_records.drop(columns=['CHROM', 'POS', 'ID']).mean(skipna = True).to_dict()
@@ -67,7 +71,7 @@ class ScannerByPos(ScannerTemplate):
                     results_sd[res_index] = case_results_sd
         return results_mean, results_sd, result_index
 
-class ScannerByPosFromParquet(ScannerFromParquetTemplate, ScannerByPos):
+class ScannerBySNPFromParquet(ScannerFromParquetTemplate, ScannerBySNP):
     pass
     # def __init__(self, input_dir: str = None):
     #     if input_dir is None:
