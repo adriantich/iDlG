@@ -9,10 +9,12 @@ from tqdm import tqdm
 import os
 import pandas as pd
 import json
+from abc import ABC, abstractmethod
 
-from scanners.defaults import DEFAULT_OUTPUT_DIR, DEFAULT_STEP, DEFAULT_WINDOW_SIZE
 
-class ScannerTemplate:
+from scanners.defaults import DEFAULT_OUTPUT_DIR
+
+class ScannerTemplate(ABC):
     def __init__(self, vcf_object: VCFLoader = None, window_size: list = None, step: list = None, chrom: list = None, force_windowstep: bool = False):
         print(f"Initializing {self.__class__.__name__}...")
         if vcf_object is None or vcf_object.records is None:
@@ -20,14 +22,21 @@ class ScannerTemplate:
             self.records = None
         else:
             self.records = vcf_object.records
-        self.window_size = window_size if window_size is not None else DEFAULT_WINDOW_SIZE
-        self.step = step if step is not None else DEFAULT_STEP
+        self.window_size = None
+        self.step = None
+        self.define_window_step()
         self.chrom = chrom if chrom is not None else None
         self.force_windowstep = force_windowstep
         self.results_mean = None
         self.results_sd = None
         self.result_index = None
         self.scanned = False
+    
+    @abstractmethod
+    def define_window_step(self, window_size: list = None, step: list = None):
+        # self.window_size = window_size if window_size is not None else DEFAULT_WINDOW_SIZE
+        # self.step = step if step is not None else DEFAULT_STEP
+        pass
 
 
     def run_scan(self):
@@ -64,6 +73,9 @@ class ScannerTemplate:
             json.dump(params, f, indent=4)
 
 class ScannerFromParquetTemplate:
+    DEFAULT_WINDOW_SIZE = None
+    DEFAULT_STEP = None
+
     # Has to be inherited and implemented in the specific scanner class from parquet,
     # and after and it has to inherit from the scanner
     def __init__(self, input_dir: str = None):
@@ -85,9 +97,9 @@ class ScannerFromParquetTemplate:
         
         with open(json_file, "r") as f:
             params = json.load(f)
-        
-        self.window_size = params.get("window_size", DEFAULT_WINDOW_SIZE)
-        self.step = params.get("step", DEFAULT_STEP)
+
+        self.window_size = params.get("window_size", self.DEFAULT_WINDOW_SIZE)
+        self.step = params.get("step", self.DEFAULT_STEP)
         self.chrom = params.get("chrom", [])
         self.result_index = params.get("result_index", [])
 

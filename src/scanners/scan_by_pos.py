@@ -10,10 +10,15 @@ import os
 import pandas as pd
 import json
 from scanners.scanner_template import ScannerTemplate, ScannerFromParquetTemplate
+from scanners.defaults import DEFAULT_WINDOW_SIZE_POS, DEFAULT_STEP_POS
 
 
 
 class ScannerByPos(ScannerTemplate):
+    def define_window_step(self, window_size: list = None, step: list = None):
+        self.window_size = window_size if window_size is not None else DEFAULT_WINDOW_SIZE_POS
+        self.step = step if step is not None else DEFAULT_STEP_POS
+
     def scan(self, chrom: list = None, window: list = None, step: list = None):
         if self.records is None:
             print("No records to scan.")
@@ -68,6 +73,8 @@ class ScannerByPos(ScannerTemplate):
         return results_mean, results_sd, result_index
 
 class ScannerByPosFromParquet(ScannerFromParquetTemplate, ScannerByPos):
+    DEFAULT_WINDOW_SIZE = DEFAULT_WINDOW_SIZE_POS
+    DEFAULT_STEP = DEFAULT_STEP_POS
     pass
     # def __init__(self, input_dir: str = None):
     #     if input_dir is None:

@@ -12,11 +12,14 @@ from scanners.scan_by_pos import ScannerByPos, ScannerByPosFromParquet
 from scanners.scan_by_snps import ScannerBySNP, ScannerBySNPFromParquet
 
 from scanners.defaults import DEFAULT_WINDOW_SIZE_SNPS, DEFAULT_STEP_SNPS
+from scanners.defaults import DEFAULT_WINDOW_SIZE_POS, DEFAULT_STEP_POS
 
 
 class ExplorerByPos(Explorer):
     Scanner = ScannerByPos
     ScannerFromParquet = ScannerByPosFromParquet
+    test_window_sizes = DEFAULT_WINDOW_SIZE_POS
+    test_steps = DEFAULT_STEP_POS
 
 class ExplorerBySNP(Explorer):
     Scanner = ScannerBySNP
@@ -25,6 +28,9 @@ class ExplorerBySNP(Explorer):
     test_steps = DEFAULT_STEP_SNPS
 
 class ExplorerByPosParser(ExplorerParser):
+    
+    CLASS_DEFAULT_WINDOW_SIZE = DEFAULT_WINDOW_SIZE_POS
+    CLASS_DEFAULT_STEP = DEFAULT_STEP_POS
     def explorer(self,*args,**kwargs):
         return ExplorerByPos(*args, **kwargs)
     
@@ -33,6 +39,9 @@ class ExplorerByPosParser(ExplorerParser):
         ExplorerByPos.test()
 
 class ExplorerBySNPParser(ExplorerParser):
+
+    CLASS_DEFAULT_WINDOW_SIZE = DEFAULT_WINDOW_SIZE_SNPS
+    CLASS_DEFAULT_STEP = DEFAULT_STEP_SNPS
     def explorer(self,*args,**kwargs):
         return ExplorerBySNP(*args, **kwargs)
     

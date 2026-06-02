@@ -9,10 +9,15 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from tqdm import tqdm
 import os
 from scanners.scanner_template import ScannerTemplate, ScannerFromParquetTemplate
+from scanners.defaults import DEFAULT_WINDOW_SIZE_SNPS, DEFAULT_STEP_SNPS
 
 
 
 class ScannerBySNP(ScannerTemplate):
+    def define_window_step(self, window_size: list = None, step: list = None):
+        self.window_size = window_size if window_size is not None else DEFAULT_WINDOW_SIZE_SNPS
+        self.step = step if step is not None else DEFAULT_STEP_SNPS
+
     def scan(self, chrom: list = None, window: list = None, step: list = None):
         if self.records is None:
             print("No records to scan.")
@@ -72,6 +77,8 @@ class ScannerBySNP(ScannerTemplate):
         return results_mean, results_sd, result_index
 
 class ScannerBySNPFromParquet(ScannerFromParquetTemplate, ScannerBySNP):
+    DEFAULT_WINDOW_SIZE = DEFAULT_WINDOW_SIZE_SNPS
+    DEFAULT_STEP = DEFAULT_STEP_SNPS
     pass
     # def __init__(self, input_dir: str = None):
     #     if input_dir is None:

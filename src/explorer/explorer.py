@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from explorer.interactive_plot import InteractivePlot
 from loader import VCFLoader
-from scanners.defaults import DEFAULT_OUTPUT_DIR, DEFAULT_STEP, DEFAULT_WINDOW_SIZE
+from scanners.defaults import DEFAULT_OUTPUT_DIR
 from abc import ABC, abstractmethod
 
 
@@ -35,8 +35,8 @@ class Explorer(ABC):
 
     Scanner = None
     ScannerFromParquet = None
-    test_window_sizes = DEFAULT_WINDOW_SIZE
-    test_steps = DEFAULT_STEP
+    test_window_sizes = None
+    test_steps = None
     
     def load_data(self):
         loader = VCFLoader(self.input_file)
@@ -89,10 +89,15 @@ DESCRIPTION = """
 Explore scan results with interactive plots.
 """
 class ExplorerParser(ABC):
+
+    CLASS_DEFAULT_WINDOW_SIZE = None
+    CLASS_DEFAULT_STEP = None
+
     def __init__(self):
         pass
 
-    def parser(self):
+    @classmethod
+    def parser(cls):
         parser = argparse.ArgumentParser(
             description=DESCRIPTION,
             add_help=False
@@ -132,14 +137,14 @@ class ExplorerParser(ABC):
         parser.add_argument(
             '-w', '--window_sizes',
             nargs='+',
-            type=int,
-            help=f'List of window sizes to explore (default: {DEFAULT_WINDOW_SIZE})'
+            type=str,
+            help=f'List of window sizes to explore (default: {" ".join(str(x) for x in cls.CLASS_DEFAULT_WINDOW_SIZE)})'
         )
         parser.add_argument(
             '-s', '--steps',
             nargs='+',
             type=int,
-            help=f'List of step sizes to explore (default: {DEFAULT_STEP})'
+            help=f'List of step sizes to explore (default: {" ".join(str(x) for x in cls.CLASS_DEFAULT_STEP)})'
         )
         parser.add_argument(
             '-f', '--force_windowstep',
@@ -170,6 +175,17 @@ class ExplorerParser(ABC):
         if args is None:
             args = self.parser_main()
         
+        print(f"Arguments: {args}")
+        
+        # if windows have commas separate values
+        if args.window_sizes:
+            args.window_sizes = [int(x) for x in ",".join(args.window_sizes).split(",")]
+        if args.steps:
+            args.steps = [int(x) for x in ",".join(args.steps).split(",")]
+
+        print(f"Parsed window sizes: {args.window_sizes}")
+        print(f"Parsed step sizes: {args.steps}")
+
         if args.test:
             self.test()
         else:
