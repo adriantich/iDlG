@@ -175,16 +175,12 @@ class ExplorerParser(ABC):
         if args is None:
             args = self.parser_main()
         
-        print(f"Arguments: {args}")
-        
         # if windows have commas separate values
         if args.window_sizes:
             args.window_sizes = [int(x) for x in ",".join(args.window_sizes).split(",")]
         if args.steps:
             args.steps = [int(x) for x in ",".join(args.steps).split(",")]
 
-        print(f"Parsed window sizes: {args.window_sizes}")
-        print(f"Parsed step sizes: {args.steps}")
 
         if args.test:
             self.test()
