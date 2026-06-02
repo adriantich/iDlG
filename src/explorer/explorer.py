@@ -174,6 +174,7 @@ class ExplorerParser(ABC):
     def main(self, args=None):
         if args is None:
             args = self.parser_main()
+        print(args)
         
         # if windows have commas separate values
         if args.window_sizes:
@@ -192,7 +193,8 @@ class ExplorerParser(ABC):
                 output_dir=args.output_dir,
                 chrom=args.chrom,
                 window_sizes=args.window_sizes,
-                steps=args.steps
+                steps=args.steps,
+                force_windowstep=args.force_windowstep
             )
         
         

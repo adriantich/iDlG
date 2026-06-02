@@ -43,9 +43,10 @@ class ScannerByPos(ScannerTemplate):
 
             for w in window:
                 for s in step:
-                    if not self.force_windowstep and w < s:
-                        print(f"Skipping combination of window size {w} and step {s} because window size is smaller than step size and force_windowstep is not set.")
-                        continue
+                    if w < s:
+                        if not self.force_windowstep:
+                            print(f"Skipping combination of window size {w} and step {s} because window size is smaller than step size and force_windowstep is not set.")
+                            continue
                     res_index = f"{chr}_{w}_{s}"
                     result_index.append((res_index, chr, w, s))
                     case_results_mean = []

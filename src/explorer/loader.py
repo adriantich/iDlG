@@ -11,7 +11,7 @@ class VCFLoader:
         print(f"Loaded {self.records.shape[0]} records from VCF file.")
         print(f"Numer of chromosomes: {len(set(self.records['CHROM']))}")
         print(f"Number of positions per chromosome: { {chrom: len(self.records[self.records['CHROM'] == chrom]["POS"]) for chrom in set(self.records['CHROM'])} }")
-        print(self.records.head())
+        # print(self.records.head())
         
     @staticmethod
     def transform_gt(gt):
