@@ -143,15 +143,16 @@ class ExplorerParser(ABC):
         parser.add_argument(
             '-s', '--steps',
             nargs='+',
-            type=int,
+            type=str,
             help=f'List of step sizes to explore (default: {" ".join(str(x) for x in cls.CLASS_DEFAULT_STEP)})'
         )
         parser.add_argument(
             '-f', '--force_windowstep',
             action='store_true',
             default=False,
-            help='Force the calculation of all the combinations of window sizes and steps.' \
-                ' If not set, window sizes is not combined with smaller step sizes (e.g. window size 1000 is not combined with step size 100).'
+            help='Forces the evaluation of every possible window size x step size combination.'\
+                 'If not set, combinations where the step size exceeds the window size are' \
+                 'skipped (e.g., window size 100 with step size 1000).'\
         )
         return parser
     
