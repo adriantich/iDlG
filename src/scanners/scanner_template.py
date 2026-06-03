@@ -24,7 +24,7 @@ class ScannerTemplate(ABC):
             self.records = vcf_object.records
         self.window_size = None
         self.step = None
-        self.define_window_step()
+        self.define_window_step(window_size=window_size, step=step)
         self.chrom = chrom if chrom is not None else None
         self.force_windowstep = force_windowstep
         self.results_mean = None
