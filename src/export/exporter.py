@@ -60,17 +60,17 @@ class ExporterParser:
         
 
 
-class ExporterSubParser:
-    def __init__(self, subparsers):
-        self.subparsers = subparsers
-        self.export_parser()
+# class ExporterSubParser:
+#     def __init__(self, subparsers):
+#         self.subparsers = subparsers
+#         self.export_parser()
     
-    def export_parser(self):
-        parser = self.subparsers.add_parser(
-            'export_parquet_to_csv', 
-            help='Export scan results from parquet to csv format',
-            parents=[ExporterParser().parser()]
-        )
-        parser.set_defaults(func=ExporterParser().main)
+#     def export_parser(self):
+#         parser = self.subparsers.add_parser(
+#             'export_parquet_to_csv', 
+#             help='Export scan results from parquet to csv format',
+#             parents=[ExporterParser().parser()]
+#         )
+#         parser.set_defaults(func=ExporterParser().main)
 
         

@@ -1,6 +1,7 @@
 import argparse
-from explorer.explore_parser import ExplorerSubParser
-from export.exporter import ExporterSubParser
+# from explorer.explore_parser import ExplorerSubParser
+# from export.exporter import ExporterSubParser
+from manager.subparser_manager import SubParserManager
 
 
 def main():
@@ -12,9 +13,10 @@ def main():
     # Create subparsers
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
     
-    # Initialize subparsers
-    ExplorerSubParser(subparsers)
-    ExporterSubParser(subparsers)
+    # # Initialize subparsers
+    # ExplorerSubParser(subparsers)
+    # ExporterSubParser(subparsers)
+    SubParserManager(subparsers)
     
     # Parse arguments
     args = parser.parse_args()
