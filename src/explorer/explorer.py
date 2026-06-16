@@ -21,7 +21,8 @@ class Explorer(ABC):
                  chrom=None,
                  window_sizes=None,
                  steps=None,
-                 force_windowstep=False):
+                 force_windowstep=False,
+                 input_from_parquet=False):
         self.plot = plot
         self.input_file = input_file
         self.from_parquet = from_parquet
@@ -30,6 +31,7 @@ class Explorer(ABC):
         self.window_sizes = window_sizes
         self.steps = steps
         self.force_windowstep = force_windowstep
+        self.input_from_parquet = input_from_parquet
         self.scanner = None
         self.main()
 
@@ -39,7 +41,7 @@ class Explorer(ABC):
     test_steps = None
     
     def load_data(self):
-        loader = VCFLoader(self.input_file)
+        loader = VCFLoader(self.input_file, from_parquet=self.input_from_parquet)
         print('Running scan...')
         self.scanner = self.Scanner(
             vcf_object = loader,

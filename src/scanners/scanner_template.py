@@ -1,5 +1,5 @@
 
-from zipfile import Path
+from pathlib import Path
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -15,7 +15,14 @@ from abc import ABC, abstractmethod
 from scanners.defaults import DEFAULT_OUTPUT_DIR
 
 class ScannerTemplate(ABC):
-    def __init__(self, vcf_object: VCFLoader = None, window_size: list = None, step: list = None, chrom: list = None, force_windowstep: bool = False):
+    def __init__(
+            self,
+            vcf_object: VCFLoader = None,
+            window_size: list = None,
+            step: list = None,
+            chrom: list = None,
+            force_windowstep: bool = False
+        ):
         print(f"Initializing {self.__class__.__name__}...")
         if vcf_object is None or vcf_object.records is None:
             print('No records provided')
@@ -88,6 +95,7 @@ class ScannerFromParquetTemplate:
         self.results_sd = None
         self.result_index = None
         self.scanned = False
+        self.load_from_json(os.path.join(input_dir, "scan_params.json"))
         self.load_from_parquet(input_dir)
     
     def load_from_json(self, json_file: str):
@@ -106,7 +114,7 @@ class ScannerFromParquetTemplate:
     def load_from_parquet(self, input_dir: str):
         results_mean = {}
         results_sd = {}
-        result_index = []
+        # result_index = []
         if not Path(input_dir).is_dir():
             print(f"Input directory '{input_dir}' does not exist or is not a directory.")
             return None, None, None
@@ -116,7 +124,7 @@ class ScannerFromParquetTemplate:
                 key = file.replace("_mean.parquet", "")
                 df_mean = pd.read_parquet(os.path.join(input_dir, file))
                 results_mean[key] = df_mean.to_dict(orient='records')
-                result_index.append((key, *key.split('_')[1:]))  # Assuming key format is "chr_window_step"
+                # result_index.append((key, *key.split('_')[1:]))  # Assuming key format is "chr_window_step"
             elif file.endswith("_sd.parquet"):
                 key = file.replace("_sd.parquet", "")
                 df_sd = pd.read_parquet(os.path.join(input_dir, file))
@@ -124,7 +132,7 @@ class ScannerFromParquetTemplate:
 
         self.results_mean = results_mean
         self.results_sd = results_sd
-        self.result_index = result_index
+        # self.result_index = result_index
         self.scanned = True
 
 

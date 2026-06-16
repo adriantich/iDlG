@@ -4,10 +4,13 @@ from pathlib import Path
 import pandas as pd
 
 class VCFLoader:
-    def __init__(self, vcf_file):
+    def __init__(self, vcf_file, from_parquet=False):
         self.vcf_file = vcf_file
-        self.records = self.load()
-        self.records = self.to_dataframe()
+        if from_parquet:
+            self.records = self.load_from_parquet(vcf_file)
+        else:
+            self.records = self.load()
+            self.records = self.to_dataframe()
         print(f"Loaded {self.records.shape[0]} records from VCF file.")
         print(f"Numer of chromosomes: {len(set(self.records['CHROM']))}")
         print(f"Number of positions per chromosome: { {chrom: len(self.records[self.records['CHROM'] == chrom]["POS"]) for chrom in set(self.records['CHROM'])} }")
@@ -48,4 +51,22 @@ class VCFLoader:
             return records
         except Exception as e:
             print(f"Error loading VCF file: {e}")
+            return None
+    
+    def save_to_parquet(self, output_file):
+        if self.records is not None:
+            df = self.to_dataframe()
+            df.to_parquet(output_file, index=False)
+            print(f"Saved records to {output_file}")
+        else:
+            print("No records to save.")
+    
+    def load_from_parquet(self, parquet_file):
+        try:
+            df = pd.read_parquet(parquet_file)
+            self.records = df
+            print(f"Loaded {self.records.shape[0]} records from Parquet file.")
+            return self.records
+        except Exception as e:
+            print(f"Error loading Parquet file: {e}")
             return None

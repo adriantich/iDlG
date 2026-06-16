@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from explorer.explore_parser import ExplorerByPosParser, ExplorerBySNPParser
 from export.exporter import ExporterParser
+from app.app_parser import AppParser
 
 
 
@@ -37,3 +38,10 @@ class SubParserManager:
             parents=[ExporterParser().parser()]
         )
         parser.set_defaults(func=ExporterParser().main)
+
+        parser = self.subparsers.add_parser(
+            'gui', 
+            help='Graphical User Interface for IDLG',
+            parents=[AppParser().parser()]
+        )
+        parser.set_defaults(func=AppParser().main)
