@@ -1,4 +1,5 @@
 __pycache__/
-*.pyctest_data/*
+*.pyc
+test_data/*
 src/app/server/plot_not_available.gif
 TEST_PROJ/*
