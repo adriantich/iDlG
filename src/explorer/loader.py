@@ -46,7 +46,11 @@ class VCFLoader:
                     results = {x.sample: VCFLoader.transform_gt(gt = x.data['GT']) for x in record.calls}
                     results['CHROM'] = record.CHROM
                     results['POS'] = record.POS
-                    results['ID'] = record.ID[0]
+                    results['ID'] = record.ID[0] if record.ID else None
+                    # Adrià remember the following:
+                    # A bug appeared because ID was none.
+                    # Solved adding the if statement but if it happens again
+                    # consider removing ID
                     records.append(results)
             return records
         except Exception as e:
