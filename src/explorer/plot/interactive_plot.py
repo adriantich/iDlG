@@ -104,8 +104,10 @@ class InteractivePlot:
                 go.Scatter(
                     x=table["midpoint"],
                     y=table[sample_name],
-                    mode="lines+markers",
-                    name=sample_name,
+                    line=dict(color="black", width=.1),
+                    # mode="lines+markers",
+                    mode="lines",
+                    # name=sample_name,
                     hovertemplate=(
                         "sample=%{fullData.name}<br>"
                         "position=%{x}<br>"
@@ -144,6 +146,7 @@ class InteractivePlot:
             yaxis_title="Mean Window value",
             template="plotly_white",
             hovermode="x unified",
+            showlegend=False,
             updatemenus=[
                 self._build_dimension_menu("chromosome", self.chromosomes, y_chr, xpos=xpos),
                 self._build_dimension_menu("window", self.windows, y_win, xpos=xpos),
@@ -245,3 +248,4 @@ class InteractivePlot:
             "active": active_idx,
             "bgcolor": "#f0f0f0",
         }
+    

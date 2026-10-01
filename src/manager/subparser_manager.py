@@ -4,7 +4,7 @@ import argparse
 
 # Add the src directory to the Python path for standalone execution
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 from explorer.explore_parser import ExplorerByPosParser, ExplorerBySNPParser
 from export.exporter import ExporterParser

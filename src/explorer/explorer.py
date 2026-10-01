@@ -6,7 +6,7 @@ import argparse
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from explorer.interactive_plot import InteractivePlot
+from plot.interactive_plot import InteractivePlot
 from loader import VCFLoader
 from scanners.defaults import DEFAULT_OUTPUT_DIR
 from abc import ABC, abstractmethod
@@ -50,6 +50,8 @@ class Explorer(ABC):
             step=self.steps,
             force_windowstep=self.force_windowstep
         )
+    
+    def run_scan(self):
         self.scanner.run_scan()
         print('Saving results to parquet...')
         self.scanner.save_to_parquet(self.output_dir)
@@ -64,11 +66,13 @@ class Explorer(ABC):
             self.load_results()
         else:
             self.load_data()
+            self.run_scan()
         
         if self.plot:
-            plotter = InteractivePlot(self.scanner)
-            plotter = plotter.build_figure()
-            plotter.show()
+            print('Plot option disabled until implemented.')
+        #     plotter = InteractivePlot(self.scanner)
+        #     plotter = plotter.build_figure()
+        #     plotter.show()
 
     @classmethod
     def test(cls):
@@ -82,9 +86,9 @@ class Explorer(ABC):
         scaner.run_scan()
         scaner.save_to_parquet("test_scan_results")
 
-        plotter = InteractivePlot(scaner)
-        fig = plotter.build_figure()
-        fig.show()
+        # plotter = InteractivePlot(scaner)
+        # fig = plotter.build_figure()
+        # fig.show()
 
 
 DESCRIPTION = """
@@ -113,7 +117,7 @@ class ExplorerParser(ABC):
             '-p', '--plot',
             action='store_true',
             default=False,
-            help='Generate interactive plot from scan results'
+            help='Generate interactive plot from scan results.'
         )
         parser.add_argument(
             '-i', '--input',

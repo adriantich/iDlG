@@ -10,9 +10,10 @@ import os
 import pandas as pd
 import json
 from abc import ABC, abstractmethod
+from explorer.regions.suggest_regions import SuggestRegions
 
 
-from scanners.defaults import DEFAULT_OUTPUT_DIR
+from src.explorer.scanners.defaults import DEFAULT_OUTPUT_DIR
 
 class ScannerTemplate(ABC):
     def __init__(
@@ -37,6 +38,7 @@ class ScannerTemplate(ABC):
         self.results_mean = None
         self.results_sd = None
         self.result_index = None
+        self.suggested_regions = {}
         self.scanned = False
     
     @abstractmethod
@@ -45,10 +47,25 @@ class ScannerTemplate(ABC):
         # self.step = step if step is not None else DEFAULT_STEP
         pass
 
+    def calculate_regions(self):
+        if not self.scanned:
+            print("Scan has not been run yet. Please run the scan first.")
+            return None
+        for key, mean_data in self.results_mean.items():
+            print(f"Calculating suggested regions for {key}...")
+            df_mean = pd.DataFrame(mean_data)
+            suggestor = SuggestRegions(df_mean)
+            regions = pd.DataFrame({
+                "midpoints": suggestor.edge_midpoints,
+                "scores": suggestor.edge_scores
+            })
+            self.suggested_regions[key] = regions
+
 
     def run_scan(self):
-        self.results_mean, self.results_sd, self.result_index = self.scan()
+        self.results_mean, self.results_sd, self.result_index = self.scan()        
         self.scanned = True
+        self.calculate_regions()
         
     def scan(self, chrom: list = None, window: list = None, step: list = None):
         pass
@@ -69,6 +86,9 @@ class ScannerTemplate(ABC):
             df_sd = pd.DataFrame(sd_data)
             df_sd.to_parquet(os.path.join(output_dir, f"{key}_sd.parquet"), compression="gzip")
         
+        for key, regions in self.suggested_regions.items():
+            regions.to_parquet(os.path.join(output_dir, f"{key}_suggested_regions.parquet"), compression="gzip")
+
         # save in a json file the class parameters and the result index
         params = {
             "window_size": self.window_size,
@@ -94,6 +114,7 @@ class ScannerFromParquetTemplate:
         self.results_mean = None
         self.results_sd = None
         self.result_index = None
+        self.suggested_regions = {}
         self.scanned = False
         self.load_from_json(os.path.join(input_dir, "scan_params.json"))
         self.load_from_parquet(input_dir)
@@ -114,6 +135,7 @@ class ScannerFromParquetTemplate:
     def load_from_parquet(self, input_dir: str):
         results_mean = {}
         results_sd = {}
+        suggested_regions = {}
         # result_index = []
         if not Path(input_dir).is_dir():
             print(f"Input directory '{input_dir}' does not exist or is not a directory.")
@@ -129,9 +151,14 @@ class ScannerFromParquetTemplate:
                 key = file.replace("_sd.parquet", "")
                 df_sd = pd.read_parquet(os.path.join(input_dir, file))
                 results_sd[key] = df_sd.to_dict(orient='records')
+            elif file.endswith("_suggested_regions.parquet"):
+                key = file.replace("_suggested_regions.parquet", "")
+                df_regions = pd.read_parquet(os.path.join(input_dir, file))
+                suggested_regions[key] = df_regions
 
         self.results_mean = results_mean
         self.results_sd = results_sd
+        self.suggested_regions = suggested_regions
         # self.result_index = result_index
         self.scanned = True
 

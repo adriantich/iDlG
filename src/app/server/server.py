@@ -9,8 +9,8 @@ from .server_tools import *
 from pathlib import Path
 
 from explorer.loader import VCFLoader
-from scanners.scan_by_pos import ScannerByPos
-from scanners.scan_by_snps import ScannerBySNP
+from explorer.scanners.scan_by_pos import ScannerByPos
+from explorer.scanners.scan_by_snps import ScannerBySNP
 import json
 from .interactive_plot import CreatePlot
 import matplotlib.pyplot as plt
